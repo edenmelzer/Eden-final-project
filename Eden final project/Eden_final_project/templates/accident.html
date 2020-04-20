@@ -1,0 +1,66 @@
+﻿﻿{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+
+<h2>{{ title }}.</h2>
+<h3>{{ message }}</h3>
+
+
+<div class="row my-grid-borders">
+    <p> </p>
+</div>
+<div class="row my-grid-borders">
+    <div class="col-md-2 my-grid-borders"><img class="contain" src={{ img_accident1 }} alt='Missing'></div>
+</div>
+<div class="row my-grid-borders">
+    <h2>Accident's Database Fields</h2>
+</div>
+<div class="row my-grid-borders">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Field</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Speed limit</td>
+                <td class="heb">המהירות המותרת בכביש בזמן התאונה</td>
+            </tr>
+            <tr>
+                <td>Number Of Vehicles</td>
+                <td>כמות המכוניות המעורבות בתאונה</td>
+            </tr>
+            <tr>
+                <td>Number Of Casualties</td>
+                <td>מספר האנשים המעורבים בתאונה</td>
+            </tr>
+            <tr>
+                <td>Accident Severity</td>
+                <td>חומרת התאונה</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="row my-grid-borders">
+    <div class="col-md-5 my-grid-borders">
+        <form method="post">
+            {{ form1.csrf_token }}
+            <input class="btn btn-success" type="submit" name="action" value="Expand">
+        </form>
+    </div>
+    <div class="col-md-5 my-grid-borders">
+        <form method="post">
+            {{ form2.csrf_token }}
+            <input class="btn btn-danger" type="submit" name="action" value="Collapse">
+        </form>
+    </div>
+</div>
+<div class="row my-grid-borders">
+    {{ raw_data_table | safe}}
+</div>
+
+
+{% endblock %}
