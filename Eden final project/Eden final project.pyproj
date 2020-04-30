@@ -58,6 +58,7 @@
     <Content Include="Eden_final_project\templates\accident.html" />
     <Content Include="Eden_final_project\templates\register.html" />
     <Content Include="Eden_final_project\templates\login.html" />
+    <Content Include="Eden_final_project\templates\Query.html" />
     <Content Include="requirements.txt" />
     <Content Include="Eden_final_project\static\content\bootstrap.css" />
     <Content Include="Eden_final_project\static\content\bootstrap.min.css" />

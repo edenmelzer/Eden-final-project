@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, IntegerField
 from wtforms import Form, BooleanField, PasswordField
 from wtforms import TextField, TextAreaField, SelectField
 from wtforms import validators, ValidationError
@@ -36,6 +36,10 @@ class UserRegistrationFormStructure(FlaskForm):
     EmailAddr  = StringField('E-Mail:  ' , validators = [DataRequired()])
     username   = StringField('User name:  ' , validators = [DataRequired()])
     password   = PasswordField('Pass word:  ' , validators = [DataRequired()])
+    submit = SubmitField('Submit')
+
+class QueryForm(FlaskForm):
+    Severity   = SelectField('Enter a number between 1-3:  ' , validators = [DataRequired()], choices = [('3', 'high'), ('2', 'medium'), ('1', 'low')])
     submit = SubmitField('Submit')
 
 

@@ -11,6 +11,9 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from Eden_final_project.models.LocalDataBaseRoutines import create_LocalDatabaseServiceRoutines
 from flask import flash
+import matplotlib.pyplot as pltfrom matplotlib.figure import Figure
+import base64from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
 
 from Eden_final_project.models.forms import ExpandForm
 from Eden_final_project.models.forms import CollapseForm
@@ -19,6 +22,8 @@ from flask import render_template
 from Eden_final_project import app
 from Eden_final_project.models.forms import LoginFormStructure 
 from Eden_final_project.models.forms import UserRegistrationFormStructure 
+from Eden_final_project.models.forms import QueryForm
+
 
 app.config['SECRET_KEY'] = 'The first argument to the field'
 
@@ -151,3 +156,35 @@ def Login():
         year=datetime.now().year,
         repository_name='Pandas',
         )
+
+@app.route('/Query' , methods = ['GET' , 'POST'])
+def Query():
+
+
+    form1 = QueryForm()
+    chart = ''
+
+   
+    df = pd.read_csv(path.join(path.dirname(__file__), 'static/data/shortdataset.csv'))
+
+
+    if request.method == 'POST':
+        Severity = int(form1.Severity.data)
+        df = df[["Speed_limit", "Accident_Severity"]]
+        df = df[df["Accident_Severity"]== Severity]
+        df = df.drop("Accident_Severity", 1)
+        df = df.groupby("Speed_limit").size()
+        df = pd.DataFrame(df)
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        df.plot(kind = "bar", ax = ax)
+        chart = plot_to_img(fig)
+
+    
+    return render_template(
+        'Query.html',
+        form1 = form1,
+        chart = chart
+    )
+
+def plot_to_img(fig):    pngImage = io.BytesIO()    FigureCanvas(fig).print_png(pngImage)    pngImageB64String = "data:image/png;base64,"    pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')    return pngImageB64String
