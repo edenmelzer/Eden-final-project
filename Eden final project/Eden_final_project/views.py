@@ -164,6 +164,7 @@ def Query():
     form1 = QueryForm()
     chart = ''
 
+    
    
     df = pd.read_csv(path.join(path.dirname(__file__), 'static/data/shortdataset.csv'))
 
@@ -185,6 +186,7 @@ def Query():
         'Query.html',
         form1 = form1,
         chart = chart
+
     )
 
 def plot_to_img(fig):    pngImage = io.BytesIO()    FigureCanvas(fig).print_png(pngImage)    pngImageB64String = "data:image/png;base64,"    pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')    return pngImageB64String
