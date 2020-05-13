@@ -24,16 +24,18 @@ from Eden_final_project.models.forms import LoginFormStructure
 from Eden_final_project.models.forms import UserRegistrationFormStructure 
 from Eden_final_project.models.forms import QueryForm
 
+from os import path
+import io
+
+from flask_bootstrap import Bootstrap
 
 app.config['SECRET_KEY'] = 'The first argument to the field'
 
 db_Functions = create_LocalDatabaseServiceRoutines() 
 
-from os import path
-import io
-
-from flask_bootstrap import Bootstrap
 bootstrap = Bootstrap(app)
+
+# this is the route to the "home" page
 @app.route('/')
 @app.route('/home')
 def home():
@@ -41,9 +43,10 @@ def home():
     return render_template(
         'index.html',
         title='Home Page',
-        year=datetime.now().year,
+        year=datetime.now().year
     )
 
+# this is the route to the "contact" page
 @app.route('/contact')
 def contact():
     """Renders the contact page."""
@@ -54,24 +57,21 @@ def contact():
         message='Your contact page.'
     )
 
+# this is the route to the "about" page
 @app.route('/about')
 def about():
     """Renders the about page."""
-    df = db_Functions.ReadCSVUsersDB()
-    raw_data_table = df.to_html(classes = 'table table-hover')
-
-
     return render_template(
         'about.html',
         title='About',
-        raw_data_table  = raw_data_table ,
         year=datetime.now().year,
         message='Your application description page.'
     )
 
+# this is the route to the "data" page
 @app.route('/data')
 def data():
-    """Renders the about page."""
+    """Renders the data page."""
     return render_template(
         'data.html',
         title='Data',
@@ -81,24 +81,24 @@ def data():
 
     )
 
+# inside the data page, there is a link to an accident dataset page
 @app.route('/data/accident' , methods = ['GET' , 'POST'])
 def accident():
-
+    """Renders the accident page."""
     print("Accident")
 
-    """Renders the about page."""
-    form1 = ExpandForm()
-    form2 = CollapseForm()
-    df = pd.read_csv(path.join(path.dirname(__file__), 'static/data/shortdataset.csv'))
+    
+    form1 = ExpandForm() # sets form1 to point to the class "ExpandFrom()" which loads the dataset as a table
+    form2 = CollapseForm() # sets form2 to point to the class "CollapseFrom()" which closes the dataset
+    df = pd.read_csv(path.join(path.dirname(__file__), 'static/data/shortdataset.csv')) # reads the dataset into df
     raw_data_table = ''
 
+    # if the "Expand" or "Collapse" buttons are pressed, then activates the request:
     if request.method == 'POST':
         if request.form['action'] == 'Expand' and form1.validate_on_submit():
             raw_data_table = df.to_html(classes = 'table table-hover')
         if request.form['action'] == 'Collapse' and form2.validate_on_submit():
             raw_data_table = ''
-
-    
 
     return render_template(
         'accident.html',
@@ -111,19 +111,20 @@ def accident():
         form2 = form2
     )
 
+# this is the route to the "register" page
 @app.route('/register', methods=['GET', 'POST'])
 def Register():
-    form = UserRegistrationFormStructure(request.form)
+    """Renders the register page."""
+    form = UserRegistrationFormStructure(request.form) # sets form to the class "UserRegistrationFormStructure" which provides info needed for registration 
 
     if (request.method == 'POST' and form.validate()):
         if (not db_Functions.IsUserExist(form.username.data)):
             db_Functions.AddNewUser(form)
-            db_table = ""
 
             flash('Thanks for registering new user - '+ form.FirstName.data + " " + form.LastName.data )
-            # Here you should put what to do (or were to go) if registration was good
+            flash('You can now go to the "login" page and log in')
         else:
-            flash('Error: User with this Username already exist ! - '+ form.username.data)
+            flash('Error: User with this Username already exists ! - '+ form.username.data)
             form = UserRegistrationFormStructure(request.form)
 
     return render_template(
@@ -134,18 +135,15 @@ def Register():
         repository_name='Pandas',
         )
 
-# -------------------------------------------------------
-# Login page
-# This page is the filter before the data analysis
-# -------------------------------------------------------
+# this is the route to the "login" page
 @app.route('/login', methods=['GET', 'POST'])
 def Login():
-    form = LoginFormStructure(request.form)
+    """Renders the login page."""
+    form = LoginFormStructure(request.form) # sets form to the class "LoginFormStructure" which lets you enter your Username and Password to log in
 
     if (request.method == 'POST' and form.validate()):
         if (db_Functions.IsLoginGood(form.username.data, form.password.data)):
             flash('Login approved!')
-            #return redirect('<were to go if login is good!')
         else:
             flash('Error in - Username and/or password')
    
@@ -157,28 +155,26 @@ def Login():
         repository_name='Pandas',
         )
 
+# this is the route to the "query" page
 @app.route('/Query' , methods = ['GET' , 'POST'])
 def Query():
+    """Renders the query page."""
+    form1 = QueryForm() # sets form1 to the class "QueryForm" which lets you select the accident's severity level
+    chart = 'static/imgs/speed-limit-road-signs-vector-25456570.jpg'
 
-
-    form1 = QueryForm()
-    chart = ''
-
-    
-   
-    df = pd.read_csv(path.join(path.dirname(__file__), 'static/data/shortdataset.csv'))
-
+    df = pd.read_csv(path.join(path.dirname(__file__), 'static/data/shortdataset.csv')) # reads the dataset into df
 
     if request.method == 'POST':
-        Severity = int(form1.Severity.data)
-        df = df[["Speed_limit", "Accident_Severity"]]
-        df = df[df["Accident_Severity"]== Severity]
-        df = df.drop("Accident_Severity", 1)
-        df = df.groupby("Speed_limit").size()
-        df = pd.DataFrame(df)
+        Severity = int(form1.Severity.data) # sets the "Severity" variable to the level selected by the user
+        df = df[["Speed_limit", "Accident_Severity"]] # filters the dataset to two fields only: "Speed_limit" and "Accident_Severity"
+        df = df[df["Accident_Severity"]== Severity] # filters out all entries of severity different from the requested one
+        df = df.drop("Accident_Severity", 1) # removes the "Accident_Severity" field, leaving out only the "Speed_limit" field
+        df = df.groupby("Speed_limit").size() # counts the number of entries of any given speed limit
+        df = pd.DataFrame(df) 
+        # presents the results as a bar chart:
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        df.plot(kind = "bar", ax = ax)
+        df.plot(kind = "bar", ax = ax) 
         chart = plot_to_img(fig)
 
     

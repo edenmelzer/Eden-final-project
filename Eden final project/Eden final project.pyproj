@@ -52,8 +52,7 @@
     <Content Include="Eden_final_project\static\data\shortdataset.csv" />
     <Content Include="Eden_final_project\static\data\users.csv" />
     <Content Include="Eden_final_project\static\imgs\accident1.jpg" />
-    <Content Include="Eden_final_project\static\imgs\CarAcc1.jpg" />
-    <Content Include="Eden_final_project\static\imgs\Me.jpeg" />
+    <Content Include="Eden_final_project\static\imgs\speed-limit-road-signs-vector-25456570.jpg" />
     <Content Include="Eden_final_project\templates\data.html" />
     <Content Include="Eden_final_project\templates\accident.html" />
     <Content Include="Eden_final_project\templates\register.html" />
