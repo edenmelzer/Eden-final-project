@@ -2,7 +2,7 @@
 Routes and views for the flask application.
 """
 
-from flask import request
+from flask import request,redirect
 
 import pandas as pd
 
@@ -43,7 +43,7 @@ def home():
     return render_template(
         'index.html',
         title='Home Page',
-        year=datetime.now().year
+        year=datetime.now().day
     )
 
 # this is the route to the "contact" page
@@ -52,9 +52,8 @@ def contact():
     """Renders the contact page."""
     return render_template(
         'contact.html',
-        title='Contact',
+        title='Eden Melzer',
         year=datetime.now().year,
-        message='Your contact page.'
     )
 
 # this is the route to the "about" page
@@ -143,7 +142,7 @@ def Login():
 
     if (request.method == 'POST' and form.validate()):
         if (db_Functions.IsLoginGood(form.username.data, form.password.data)):
-            flash('Login approved!')
+            return redirect('Query')
         else:
             flash('Error in - Username and/or password')
    
